@@ -146,9 +146,11 @@ jobs:
             nm-
 
       - name: Build package
-        run: yarn prepare
+        run: |
+          yarn prepare
+          yarn pack
 
-      - name: Upload build artifcat
+      - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
           name: build
