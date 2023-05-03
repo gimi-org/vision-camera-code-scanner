@@ -132,5 +132,9 @@
       "typescript"
     ]
   },
-  "packageManager": "yarn@3.5.0"
+  "packageManager": "yarn@4.0.0-rc.43",
+  "volta": {
+    "node": "18.15.0",
+    "yarn": "1.22.19"
+  }
 }
