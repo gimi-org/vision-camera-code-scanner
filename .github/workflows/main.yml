@@ -1,0 +1,154 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  install-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: 'yarn'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            nm-${{ hashFiles('yarn.lock') }}
+            nm-
+            nm-
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: install-dependencies
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: 'yarn'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            nm-${{ hashFiles('yarn.lock') }}
+            nm-
+            nm-
+
+      - name: Lint files
+        run: yarn lint
+
+  typescript:
+    runs-on: ubuntu-latest
+    needs: install-dependencies
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: 'yarn'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            nm-${{ hashFiles('yarn.lock') }}
+            nm-
+            nm-
+
+      - name: Typecheck files
+        run: yarn typescript
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    needs: install-dependencies
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: 'yarn'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            nm-${{ hashFiles('yarn.lock') }}
+            nm-
+            nm-
+
+      - name: Run unit tests
+        run: yarn test --coverage
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: coverage
+
+  build-package:
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - typescript
+      - unit-tests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: 'yarn'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            nm-${{ hashFiles('yarn.lock') }}
+            nm-
+            nm-
+
+      - name: Build package
+        run: yarn prepare
+
+      - name: Upload build artifcat
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: package.tgz
