@@ -87,6 +87,7 @@ jobs:
         run: yarn typescript
 
   unit-tests:
+    if: false # disable since there are no tests
     runs-on: ubuntu-latest
     needs: install-dependencies
     steps:
@@ -123,7 +124,7 @@ jobs:
     needs:
       - lint
       - typescript
-      - unit-tests
+      # - unit-tests
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
